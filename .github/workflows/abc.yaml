@@ -2,33 +2,60 @@
 name: Terraform Deploy to Azure
 
 on:
-  push:
-    branches:
-      - main
+  workflow_dispatch:
+    inputs:
+      tf_action:
+        description: 'Terraform action (plan/apply)'
+        required: true
+        default: 'plan'
+      location:
+        description: 'Azure location'
+        required: true
+        default: 'East US'
+      resource_group:
+        description: 'Resource Group Name'
+        required: true
+        default: 'Mukul_Verma_RG'
 
 jobs:
   terraform:
     runs-on: ubuntu-latest
 
     steps:
+      # Checkout code
       - name: Checkout repository
         uses: actions/checkout@v3
 
+      # Setup Terraform
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v2
         with:
           terraform_version: 1.5.7
 
+      # Azure Login
       - name: Azure Login
         uses: azure/login@v1
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
+      # Terraform Init
       - name: Terraform Init
         run: terraform init
 
+      # Terraform Plan
       - name: Terraform Plan
-        run: terraform plan
+        if: ${{ github.event.inputs.tf_action == 'plan' }}
+        run: terraform plan -out=tfplan
 
+      # Upload Plan Artifact
+      - name: Upload Plan Artifact
+        if: ${{ github.event.inputs.tf_action == 'plan' }}
+        uses: actions/upload-artifact@v3
+        with:
+          name: terraform-plan
+          path: tfplan
+
+      # Terraform Apply
       - name: Terraform Apply
+        if: ${{ github.event.inputs.tf_action == 'apply' }}
         run: terraform apply -auto-approve
