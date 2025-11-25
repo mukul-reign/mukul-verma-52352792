@@ -4,7 +4,7 @@ provider "azurerm" {
 }
 
 resource "azurerm_log_analytics_workspace" "law" {
-  name                = "loganalytics-mukul"
+  name                = "loganalyticsmukul"
   location            = "East US"
   resource_group_name = "Mukul_Verma_RG"
   sku                 = "PerGB2018"
