@@ -4,7 +4,7 @@ provider "azurerm" {
 }
 
 resource "azurerm_storage_account" "storage" {
-  name                     = "muk-stg-0111" # must be globally unique
+  name                     = "mukstg0111" 
   resource_group_name      = "Mukul_Verma_RG"
   location                 = "East US"
   account_tier             = "Standard"
